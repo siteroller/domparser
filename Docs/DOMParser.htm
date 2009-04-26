@@ -1,0 +1,120 @@
+<?php
+
+	copyright S. Goodman, ishtov@yahoo.com
+
+	Objective: Get elements using css selectors.  Supports poorly-formed xml and css3 selectors.
+
+	Basic usage:
+		a. Create instance of parser. $dom = new DOMParser('index.php');
+		b. Get or replace elements using built in functions. $dom -> get('#myDiv'); $dom->set('#one', 'Hello world!', 'innerTEXT');
+
+	Documentation:
+		Syntax:
+			[, ]: optional arguments are surrounded by brackets
+			$dom:	Any legal php variable.  Used to refer to the class.
+			$html:	HTML/XML markup.  Accepts a properly encoded url, a variable containing the html, or the html itself.   
+			$css:	any valid css selectors, plus the following custom selectors:
+				a. '<': Parent selectors.  returns the parent of previous selected arguments.
+				b. '<3': The following can be followed by an iterator: '>', '<', '+', ''.  '>3' means all descendants three levels lower, otherwise written as: ' > * > * >'.
+				c. '<3-': The iterator can be followed by a plus or minus; '>3-' means all children that are within 3 generations (inclusive), '>3+' means all children from 3 genrations on (inclusive).
+			$target (formerly $location/$place):
+			$options: The last parameter of all functions is an associative array of optional parameters.
+				The default is always the first option listed.
+				eg: to set the 'action' to close on the get function, one would call get(#css, array($action => 'close', $content=>innerHTML)).
+				This should be familiar to javascript and php developers, but may be new to all others.
+				All arguments can be passed in as options.
+		
+		Initialization:
+			Usage: 	$dom = new DOMParser($html [,array($options)]);
+			Options:
+				$curl				=> true/false 
+				$advancedSelectors  => false/true
+				$stripTags			=> Comma delimitted list of tags to ignore while creating the xml tree.  Defaults to 'comments, php, script'.
+						ie: in the following html, the span is considered to be inside the div: '<div> <!-- </div> --> <span></span> </div>'.
+
+		Functions: 
+			a. get():
+				Usage: 	$variable->get($css [,array($options)]);
+				Options:
+					$target     => innerHTML/outerHTML/innerTEXT/tags
+						In '<div>text</div>' - innerHTML is 'text', outerHTML is '<div>text</div>', tags is array([0]=>'<div>', [1]=>'</div>'),
+						innerTEXT returns the innerHTML without any of its children: '<div>text<img /></div>' returns 'text' 
+					$action     => run/close
+						If set to 'close', class is deleted after returning its value.
+					$response   => auto/string/array/object
+						'auto' - if only one item, return as string. 'string' - '<div>A</div><div>B</div>', 'array' - array([0]=>'<div>A</div>', [1]=>'<div>B</div>')
+					$properties => Comma delimitted list of properties [defaults to none].  eg: 'id, class, rel'. 
+						Response will be returned as an associative array in which each property is an element, and the html is referred to as 'content'.	
+						To get the following: array{ [id]=>'a', [class]=>null, [content]=>text }:
+							$dom = new DOMParser('<div id="a">text</div>'); 
+							$dom -> get('div', array($properties=>'id class');
+						
+			b. set():
+				Usage: 	$dom -> set([$css][,$html][,$target][,$action]);
+					Any or all arguments may be skipped, they may be entered in any order (except that $html can not come before $css), and they are not case sensitive. 
+					If $css is skipped, the queue will be processed.
+					if $html is skipped, the element will be deleted.
+					$target defaults to 'innerHTML', and $action defaults to 'rebuild'.
+					Only $html may be an array (a non-associative array of elements, or an associative list of properties/styles).
+				Unique arguments:
+					$html 	=> [formatted HTML]/array([formatted HTML], [formatted HTML])/array([property] => [value])/array([style]=>[value]);
+					$target => innerHTML/outerHTML/top/bottom/before/after/tag/properties/styles //(innerTEXT)
+					$action	=> rebuild/run/close/queue
+			c. close():
+				Usage: $dom -> close([$options]);
+					Processes queue and disposes of class.
+				Options:
+					All 'set' options, except that 'action' defaults to 'close'.		
+			
+			
+	Class template() - extends DOMParser
+		Functions: 		
+			a. merge():
+				Usage: $dom -> combine($html [,array($options));
+				Options:
+			b. repeat(): 
+				Usage: $dom -> repeat(array($options));
+			
+----------------------
+
+		Functions:	
+		a. Create an instance of the class, passing in the markup you wish to parse.  
+			The page may be a properly encoded url, a variable containing the html, or the html itself.
+				eg: $dom = new DOMParser('<body><div id='a'>A</div><span>B</span></body>');
+				eg: $dom = new DOMParser('my%20index.php');
+		b. To get an element, call the get function, passing in the css selectors used to identify the class.
+			By default, multiple elements will be returned as an array. 
+				eg: $dom->get('#a');
+				eg: $dom->get('div#a, span')
+		c. To replace an element with another, call replace, passing in the two elements.  
+			To delete an element, skip the second element.
+				eg: $dom->replace('#a', 'C'); 	//returns '<body><div id='a'>C</div><span>B</span></body>'
+				eg: $dom->replace('#a');  		//returns '<body><span>B</span></body>'
+		d. To replace all divs in the markup with similarly named divs in another page, call the template function, passing in the other page/markup.
+				eg: $dom->template('faq.php');
+	Optional parameters:
+		a. 
+			
+	Documentation:
+			
+				
+		02 655-3204. Clinton Sachar Jerusalem.
+		clinton sachar 03 721 2000
+
+1.todo:
+	a. localurls should default to file_get_contents instead of curl.
+	b. make sure all incoming pair[0]s are moved to lowercase
+	c. excluded tags:
+		implement the various tag excludes
+		all non standard tags are put into 'comments', they should be subdivided appropriately.
+	d. The following is currently unhandled:
+		<p <b> bold text </b</p This  is even valid HTML (but not valid XHTML)
+		<!-- abcd-- >
+	e. many advanced css selectors not yet implemented.
+	f. property functions:
+		get should allow selection of styles ?
+		set property and styles selection not implemented.
+		properties should be included in the original regex instead of its own function
+	h. change index back to numbers instead of eNumber
+	i. allow get to return an object
+	j. Unable to handle ids that have a dash in them ("#div-1") 	

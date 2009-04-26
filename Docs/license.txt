@@ -1,0 +1,4 @@
+Copyright SamGoody siteroller@gmail.com
+All Rights Reserved
+
+Future versions of this class (once its stable) will probably be GPL'd
