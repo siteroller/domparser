@@ -1,6 +1,6 @@
 <?php
 
-	copyright S. Goodman, ishtov@yahoo.com
+	copyright S. Goodman, siteroller@gmail.com
 
 	Objective: Get elements using css selectors.  Supports poorly-formed xml and css3 selectors.
 
@@ -94,27 +94,3 @@
 				eg: $dom->template('faq.php');
 	Optional parameters:
 		a. 
-			
-	Documentation:
-			
-				
-		02 655-3204. Clinton Sachar Jerusalem.
-		clinton sachar 03 721 2000
-
-1.todo:
-	a. localurls should default to file_get_contents instead of curl.
-	b. make sure all incoming pair[0]s are moved to lowercase
-	c. excluded tags:
-		implement the various tag excludes
-		all non standard tags are put into 'comments', they should be subdivided appropriately.
-	d. The following is currently unhandled:
-		<p <b> bold text </b</p This  is even valid HTML (but not valid XHTML)
-		<!-- abcd-- >
-	e. many advanced css selectors not yet implemented.
-	f. property functions:
-		get should allow selection of styles ?
-		set property and styles selection not implemented.
-		properties should be included in the original regex instead of its own function
-	h. change index back to numbers instead of eNumber
-	i. allow get to return an object
-	j. Unable to handle ids that have a dash in them ("#div-1") 	
